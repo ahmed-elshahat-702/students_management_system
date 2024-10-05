@@ -6,6 +6,14 @@ export async function GET() {
 
   try {
     const students = await StudentModel.find();
+    if (students.length === 0) {
+      return new Response(JSON.stringify({ message: "No students found" }), {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        status: 404,
+      });
+    }
     return new Response(JSON.stringify({ students: students }), {
       headers: {
         "Content-Type": "application/json",
