@@ -76,7 +76,7 @@ const page = () => {
               Student Profile
             </h1>
             {/* student image */}
-            {student && student?.avatar && (
+            {student && student.avatar ? (
               <div className="w-24 h-24 rounded-full mx-auto mb-4">
                 <Image
                   src={student?.avatar}
@@ -87,6 +87,8 @@ const page = () => {
                   className="w-full h-full object-cover rounded-full"
                 />
               </div>
+            ) : (
+              <div className="w-24 h-24 rounded-full bg-slate-100 mx-auto mb-4"></div>
             )}
 
             <p className="text-md sm:text-lg md:text-xl">{student?.fullName}</p>
@@ -136,6 +138,8 @@ const page = () => {
                     <td className="px-4 py-2">
                       {!student[title] || student[title] === ""
                         ? "-------"
+                        : title === "birthdate" || title === "releaseDate"
+                        ? new Date(student[title]).toISOString().split("T")[0]
                         : student[title]}
                     </td>
                   </tr>
@@ -250,6 +254,8 @@ const page = () => {
                     <td className="px-4 py-2">
                       {!student[title] || student[title] === ""
                         ? "-------"
+                        : title === "coordinationApprovalDate"
+                        ? new Date(student[title]).toISOString().split("T")[0]
                         : student[title]}
                     </td>
                   </tr>

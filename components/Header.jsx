@@ -61,13 +61,17 @@ const Header = () => {
                   className="overflow-hidden rounded-full"
                 >
                   {user ? (
-                    <Image
-                      src={user.avatar}
-                      width={36}
-                      height={36}
-                      alt="Avatar"
-                      className="overflow-hidden rounded-full"
-                    />
+                    user.avatar ? (
+                      <Image
+                        src={user.avatar}
+                        width={36}
+                        height={36}
+                        alt="Avatar"
+                        className="overflow-hidden rounded-full"
+                      />
+                    ) : (
+                      <div className="w-full h-full rounded-full bg-slate-300"></div>
+                    )
                   ) : (
                     <Skeleton className="w-full h-full rounded-full bg-slate-300" />
                   )}
