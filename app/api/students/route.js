@@ -1,7 +1,7 @@
 import StudentModel from "../models/StudentModel";
 import dbConnect from "../utils/dbConnect";
 
-export async function GET() {
+export async function GET(request, response) {
   await dbConnect();
 
   try {

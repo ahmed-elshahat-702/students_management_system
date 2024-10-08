@@ -1,7 +1,7 @@
 import TeacherModel from "../models/TeacherModel";
 import dbConnect from "../utils/dbConnect";
 
-export async function DELETE(request) {
+export async function DELETE(request, response) {
   await dbConnect();
   try {
     const url = new URL(request.url);
