@@ -8,6 +8,49 @@ import React, { useEffect, useState } from "react";
 
 const page = () => {
   const [student, setStudent] = useState(null);
+  const personalInformationTitles = [
+    "fullName",
+    "level",
+    "code",
+    "systemMail",
+    "gender",
+    "nationality",
+    "religion",
+    "birthdate",
+    "placeOfBirth	",
+    "nationalID",
+    "releaseDate",
+    "placeOfRelease",
+  ];
+  const contactInformationTitles = [
+    "city",
+    "address",
+    "mobile",
+    "email",
+    "fax",
+    "mailBox",
+  ];
+  const educationInformationTitles = [
+    "school",
+    "qualification",
+    "graduationYear",
+    "theRoleOfTheQualification",
+    "totalScores",
+    "ratio",
+    "coordinationApprovalDate",
+    "thePartyFromWhichItIsTransferred",
+    "yearOfEnrollment",
+    "desires",
+  ];
+  const guardianInformationTitles = [
+    "guardianName",
+    "guardianJob",
+    "guardianCity",
+    "guardianAddress",
+    "homeTelephone",
+    "guardianMobile",
+    "guardianEmail",
+  ];
   useEffect(() => {
     handleGetStudent();
   }, []);
@@ -33,10 +76,10 @@ const page = () => {
               Student Profile
             </h1>
             {/* student image */}
-            {student && student.avatar && (
+            {student && student?.avatar && (
               <div className="w-24 h-24 rounded-full mx-auto mb-4">
                 <Image
-                  src={student.avatar}
+                  src={student?.avatar}
                   alt="Student Avatar"
                   width={100}
                   height={100}
@@ -46,12 +89,15 @@ const page = () => {
               </div>
             )}
 
-            <p className="text-md sm:text-lg md:text-xl">{student.fullName}</p>
+            <p className="text-md sm:text-lg md:text-xl">{student?.fullName}</p>
             <p className="opacity-80 text-sm sm:text-md md:text-lg">
-              username: {student.username}
+              level: {student?.level}
             </p>
-            <p className=" text-sm sm:text-md md:text-lg">
-              Level: {student.level}
+            <p className="opacity-80 text-sm sm:text-md md:text-lg">
+              username: {student?.username}
+            </p>
+            <p className="opacity-80 text-sm sm:text-md md:text-lg">
+              password: {student?.password}
             </p>
           </div>
 
@@ -60,138 +106,154 @@ const page = () => {
             {/* Personal Information Table */}
             <h2
               id="personal-info"
-              className="text-md sm:text-lg md:text-xl lg:text-2xl font-semibold mb-6 border-b pb-2"
+              className="text-md sm:text-lg md:text-xl lg:text-2xl font-semibold mb-6 pb-2"
             >
               Personal Information
             </h2>
             <table className="min-w-full mb-8 text-left table-auto border-collapse">
               <tbody className="max-sm:text-sm">
-                <tr className="border-t">
-                  <td className="px-4 py-2 font-semibold">Full Name</td>
-                  <td className="px-4 py-2">{student.fullName}</td>
-                </tr>
-                <tr className="border-t">
-                  <td className="px-4 py-2 font-semibold">Gender</td>
-                  <td className="px-4 py-2">{student.gender}</td>
-                </tr>
-                <tr className="border-t">
-                  <td className="px-4 py-2 font-semibold">Nationality</td>
-                  <td className="px-4 py-2">{student.nationality}</td>
-                </tr>
-                <tr className="border-t">
-                  <td className="px-4 py-2 font-semibold">Religion</td>
-                  <td className="px-4 py-2">{student.religion}</td>
-                </tr>
-                <tr className="border-t">
-                  <td className="px-4 py-2 font-semibold">Birthdate</td>
-                  <td className="px-4 py-2">{student.birthdate}</td>
-                </tr>
-                <tr className="border-t">
-                  <td className="px-4 py-2 font-semibold">Place of Birth</td>
-                  <td className="px-4 py-2">{student.PlaceOfBirth}</td>
-                </tr>
-                <tr className="border-t">
-                  <td className="px-4 py-2 font-semibold">National ID</td>
-                  <td className="px-4 py-2">{student.nationalID}</td>
-                </tr>
+                {personalInformationTitles.map((title, index) => (
+                  <tr
+                    className={`${
+                      index === 0 ? "border-t border-b" : "border-b"
+                    }`}
+                    key={title}
+                  >
+                    <td className="px-4 py-2 font-semibold">
+                      {title === "nationalID"
+                        ? "National ID"
+                        : title
+                            .replace(/([A-Z])/g, " $1")
+                            .trim()
+                            .split(" ")
+                            .map(
+                              (word) =>
+                                word.charAt(0).toUpperCase() +
+                                word.slice(1).toLowerCase()
+                            )
+                            .join(" ")}
+                    </td>
+                    <td className="px-4 py-2">
+                      {!student[title] || student[title] === ""
+                        ? "-------"
+                        : student[title]}
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
 
             {/* Contact Information Table */}
             <h2
               id="contact-info"
-              className="text-md sm:text-lg md:text-xl lg:text-2xl font-semibold mb-6 border-b pb-2"
+              className="text-md sm:text-lg md:text-xl lg:text-2xl font-semibold mb-6 pb-2"
             >
               Contact Information
             </h2>
             <table className="min-w-full mb-8 text-left table-auto border-collapse">
               <tbody className="max-sm:text-sm">
-                <tr className="border-t">
-                  <td className="px-4 py-2 font-semibold">City</td>
-                  <td className="px-4 py-2">{student.city}</td>
-                </tr>
-                <tr className="border-t">
-                  <td className="px-4 py-2 font-semibold">Address</td>
-                  <td className="px-4 py-2">{student.address}</td>
-                </tr>
-                <tr className="border-t">
-                  <td className="px-4 py-2 font-semibold">Mobile</td>
-                  <td className="px-4 py-2">{student.mobile}</td>
-                </tr>
-                <tr className="border-t">
-                  <td className="px-4 py-2 font-semibold">Email</td>
-                  <td className="px-4 py-2">{student.email}</td>
-                </tr>
-                <tr className="border-t">
-                  <td className="px-4 py-2 font-semibold">System Email</td>
-                  <td className="px-4 py-2">{student.systemMail}</td>
-                </tr>
-              </tbody>
-            </table>
-
-            {/* Educational Information Table */}
-            <h2
-              id="educational-info"
-              className="text-md sm:text-lg md:text-xl lg:text-2xl font-semibold mb-6 border-b pb-2"
-            >
-              Educational Information
-            </h2>
-            <table className="min-w-full mb-8 text-left table-auto border-collapse">
-              <tbody className="max-sm:text-sm">
-                <tr className="border-t">
-                  <td className="px-4 py-2 font-semibold">School</td>
-                  <td className="px-4 py-2">{student.school}</td>
-                </tr>
-                <tr className="border-t">
-                  <td className="px-4 py-2 font-semibold">Qualification</td>
-                  <td className="px-4 py-2">{student.qualification}</td>
-                </tr>
-                <tr className="border-t">
-                  <td className="px-4 py-2 font-semibold">Graduation Year</td>
-                  <td className="px-4 py-2">{student.graduationYear}</td>
-                </tr>
-                <tr className="border-t">
-                  <td className="px-4 py-2 font-semibold">Total Scores</td>
-                  <td className="px-4 py-2">{student.totalScores}</td>
-                </tr>
-                <tr className="border-t">
-                  <td className="px-4 py-2 font-semibold">
-                    Year of Enrollment
-                  </td>
-                  <td className="px-4 py-2">{student.yearOfEnrollment}</td>
-                </tr>
+                {contactInformationTitles.map((title, index) => (
+                  <tr
+                    className={`${
+                      index === 0 ? "border-t border-b" : "border-b"
+                    }`}
+                    key={title}
+                  >
+                    <td className="px-4 py-2 font-semibold">
+                      {title
+                        .replace(/([A-Z])/g, " $1")
+                        .trim()
+                        .split(" ")
+                        .map(
+                          (word) =>
+                            word.charAt(0).toUpperCase() +
+                            word.slice(1).toLowerCase()
+                        )
+                        .join(" ")}
+                    </td>
+                    <td className="px-4 py-2">
+                      {!student[title] || student[title] === ""
+                        ? "-------"
+                        : student[title]}
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
 
             {/* Guardian Information Table */}
             <h2
               id="guardian-info"
-              className="text-md sm:text-lg md:text-xl lg:text-2xl font-semibold mb-6 border-b pb-2"
+              className="text-md sm:text-lg md:text-xl lg:text-2xl font-semibold mb-6 pb-2"
             >
               Guardian Information
             </h2>
-            <table className="min-w-full text-left table-auto border-collapse">
+            <table className="min-w-full mb-8 text-left table-auto border-collapse">
               <tbody className="max-sm:text-sm">
-                <tr className="border-t">
-                  <td className="px-4 py-2 font-semibold">Guardian Name</td>
-                  <td className="px-4 py-2">{student.guardianName}</td>
-                </tr>
-                <tr className="border-t">
-                  <td className="px-4 py-2 font-semibold">Guardian Job</td>
-                  <td className="px-4 py-2">{student.guardianJob}</td>
-                </tr>
-                <tr className="border-t">
-                  <td className="px-4 py-2 font-semibold">Guardian City</td>
-                  <td className="px-4 py-2">{student.guardianCity}</td>
-                </tr>
-                <tr className="border-t">
-                  <td className="px-4 py-2 font-semibold">Guardian Address</td>
-                  <td className="px-4 py-2">{student.guardianAddress}</td>
-                </tr>
-                <tr className="border-t">
-                  <td className="px-4 py-2 font-semibold">Guardian Mobile</td>
-                  <td className="px-4 py-2">{student.guardianMobile}</td>
-                </tr>
+                {guardianInformationTitles.map((title, index) => (
+                  <tr
+                    className={`${
+                      index === 0 ? "border-t border-b" : "border-b"
+                    }`}
+                    key={title}
+                  >
+                    <td className="px-4 py-2 font-semibold">
+                      {title
+                        .replace(/([A-Z])/g, " $1")
+                        .trim()
+                        .split(" ")
+                        .map(
+                          (word) =>
+                            word.charAt(0).toUpperCase() +
+                            word.slice(1).toLowerCase()
+                        )
+                        .join(" ")}
+                    </td>
+                    <td className="px-4 py-2">
+                      {!student[title] || student[title] === ""
+                        ? "-------"
+                        : student[title]}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {/* Educational Information Table */}
+
+            <h2
+              id="educational-info"
+              className="text-md sm:text-lg md:text-xl lg:text-2xl font-semibold mb-6 pb-2"
+            >
+              Educational Information
+            </h2>
+            <table className="min-w-full mb-8 text-left table-auto border-collapse">
+              <tbody className="max-sm:text-sm">
+                {educationInformationTitles.map((title, index) => (
+                  <tr
+                    className={`${
+                      index === 0 ? "border-t border-b" : "border-b"
+                    }`}
+                    key={title}
+                  >
+                    <td className="px-4 py-2 font-semibold">
+                      {title
+                        .replace(/([A-Z])/g, " $1")
+                        .trim()
+                        .split(" ")
+                        .map(
+                          (word) =>
+                            word.charAt(0).toUpperCase() +
+                            word.slice(1).toLowerCase()
+                        )
+                        .join(" ")}
+                    </td>
+                    <td className="px-4 py-2">
+                      {!student[title] || student[title] === ""
+                        ? "-------"
+                        : student[title]}
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
@@ -199,6 +261,7 @@ const page = () => {
       </div>
     </div>
   ) : (
+    // skeleton
     <div className="flex min-h-screen">
       <div className="flex-1">
         <div className="max-w-4xl max-sm:max-w-full mx-auto">
