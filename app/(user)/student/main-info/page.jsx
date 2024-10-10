@@ -69,7 +69,7 @@ const page = () => {
     <div className="flex min-h-screen bg-gray-100">
       {/* Main Content */}
       <div className="flex-1">
-        <div className="max-sm:max-w-full max-w-2xl lg:max-w-3xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
+        <div className="max-sm:max-w-full max-md:mx-4 max-w-2xl lg:max-w-3xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
           {/* Header */}
           <div className="bg-gradient-to-r from-green-600 to-green-400 py-8 sm:py-12 text-white text-center">
             <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold mb-2">
@@ -270,7 +270,7 @@ const page = () => {
     // skeleton
     <div className="flex min-h-screen">
       <div className="flex-1">
-        <div className="max-w-4xl max-sm:max-w-full mx-auto">
+        <div className="max-sm:max-w-full max-md:mx-4 max-w-2xl lg:max-w-3xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
           <div className="flex flex-col space-y-3">
             <Skeleton className="h-[330px] w-full rounded-xl bg-slate-300" />
             <div className="grid grid-cols-2 gap-4">

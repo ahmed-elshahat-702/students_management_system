@@ -7,7 +7,7 @@ export async function GET(request, response) {
   try {
     const students = await StudentModel.find();
     if (students.length === 0) {
-      return new Response(JSON.stringify({ message: "No students found" }), {
+      return new Response(JSON.stringify({ error: "No students found" }), {
         headers: {
           "Content-Type": "application/json",
         },

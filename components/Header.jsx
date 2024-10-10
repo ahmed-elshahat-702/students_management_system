@@ -3,7 +3,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import { SidebarContext } from "./SidebarProvider";
 import Image from "next/image";
-import LogoutButton from "@/components/LogoutButton";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { FaBars } from "react-icons/fa";
@@ -16,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { authorize } from "@/lib/api";
+import LogoutButton from "./LogoutButton";
 
 const Header = () => {
   const [user, setUser] = useState(null);
@@ -80,8 +80,18 @@ const Header = () => {
               <DropdownMenuContent align="end" className="bg-white">
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>Settings</DropdownMenuItem>
-                <DropdownMenuItem>Support</DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer">
+                  Change Password
+                </DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer">
+                  Change Language
+                </DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer">
+                  Mode
+                </DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer">
+                  Support
+                </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
                   <LogoutButton className="w-full" />

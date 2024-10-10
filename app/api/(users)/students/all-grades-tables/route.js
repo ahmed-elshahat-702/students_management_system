@@ -1,20 +1,20 @@
-import TeacherModel from "../../models/TeacherModel";
-import dbConnect from "../../utils/dbConnect";
+import GradesModel from "@/app/api/models/GradesModel";
+import dbConnect from "@/app/api/utils/dbConnect";
 
 export async function GET(request, response) {
   await dbConnect();
 
   try {
-    const teachers = await TeacherModel.find();
-    if (teachers.length === 0) {
-      return new Response(JSON.stringify({ error: "No teachers found" }), {
+    const grades = await GradesModel.find();
+    if (grades.length === 0) {
+      return new Response(JSON.stringify({ error: "No Data found" }), {
         headers: {
           "Content-Type": "application/json",
         },
         status: 404,
       });
     }
-    return new Response(JSON.stringify({ teachers: teachers }), {
+    return new Response(JSON.stringify({ grades: grades }), {
       headers: {
         "Content-Type": "application/json",
       },
