@@ -7,10 +7,11 @@ export default function UserLayout({ children }) {
     <div className="flex min-h-screen">
       <SidebarProvider>
         <SideBar />
-
-        <main className={`flex flex-col w-full lg:pl-72`}>
-          <Header />
-          <section className={`pt-20 sm:pt-32`}>{children}</section>
+        <main className="flex flex-col w-full lg:pl-72">
+          <header>
+            <Header />
+          </header>
+          <section className="pt-20 sm:pt-32">{children}</section>
         </main>
       </SidebarProvider>
     </div>

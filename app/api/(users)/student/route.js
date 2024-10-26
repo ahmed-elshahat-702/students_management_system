@@ -1,63 +1,30 @@
 import StudentModel from "../../models/StudentModel";
 import dbConnect from "../../utils/dbConnect";
 
-export async function GET(request, response) {
+// GET Request Handler
+export async function GET(request) {
   await dbConnect();
   try {
     const url = new URL(request.url);
     const username = url.searchParams.get("username");
 
-    const student = await StudentModel.findOne({
-      username: username,
-    });
-    return new Response(JSON.stringify({ student: student }), {
-      status: 200,
-    });
-  } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-    });
-  }
-}
+    const student = await StudentModel.findOne({ username });
 
-export async function POST(request, response) {
-  await dbConnect();
-  try {
-    const StudentData = await request.formData();
-    const StudentDataObject = Object.fromEntries(StudentData);
-    const avatar = StudentDataObject.avatar;
-    const student = await StudentModel.findOne({
-      username: StudentDataObject.username,
-    });
-    if (student) {
-      return new Response(JSON.stringify({ error: "Student already exists" }), {
+    if (!student) {
+      return new Response(JSON.stringify({ error: "Student not found" }), {
         headers: {
           "Content-Type": "application/json",
         },
-        status: 400,
+        status: 404,
       });
-    } else {
-      if (avatar) {
-        const newStudent = new StudentModel({
-          ...StudentDataObject,
-          avatar: avatar,
-        });
-        await newStudent.save();
-      } else {
-        const newStudent = new StudentModel(StudentDataObject);
-        await newStudent.save();
-      }
-
-      return new Response(
-        JSON.stringify({ message: "Student added successfully" }),
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          status: 201,
-        }
-      );
     }
+
+    return new Response(JSON.stringify({ student }), {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      status: 200,
+    });
   } catch (error) {
     return new Response(JSON.stringify({ error: error.message }), {
       headers: {
@@ -68,6 +35,53 @@ export async function POST(request, response) {
   }
 }
 
+// POST Request Handler
+export async function POST(request) {
+  await dbConnect();
+  try {
+    const studentData = await request.formData();
+    const studentDataObject = Object.fromEntries(studentData);
+    const avatar = studentDataObject.avatar;
+
+    const existingStudent = await StudentModel.findOne({
+      username: studentDataObject.username,
+    });
+
+    if (existingStudent) {
+      return new Response(JSON.stringify({ error: "Student already exists" }), {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        status: 400,
+      });
+    }
+
+    const newStudent = new StudentModel({
+      ...studentDataObject,
+      avatar: avatar || undefined, // only set avatar if it exists
+    });
+    await newStudent.save();
+
+    return new Response(
+      JSON.stringify({ message: "Student added successfully" }),
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        status: 201,
+      }
+    );
+  } catch (error) {
+    return new Response(JSON.stringify({ error: error.message }), {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      status: 500,
+    });
+  }
+}
+
+// DELETE Request Handler
 export async function DELETE(request) {
   await dbConnect();
   try {
@@ -77,18 +91,30 @@ export async function DELETE(request) {
     const deletedStudent = await StudentModel.findOneAndDelete({
       username,
     });
+
     if (!deletedStudent) {
       return new Response(JSON.stringify({ error: "Student not found" }), {
+        headers: {
+          "Content-Type": "application/json",
+        },
         status: 404,
       });
     }
 
     return new Response(
       JSON.stringify({ message: "Student deleted successfully!" }),
-      { status: 200 }
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        status: 200,
+      }
     );
   } catch (error) {
     return new Response(JSON.stringify({ error: error.message }), {
+      headers: {
+        "Content-Type": "application/json",
+      },
       status: 500,
     });
   }

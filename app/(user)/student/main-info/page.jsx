@@ -5,9 +5,11 @@ import { authorize, getStudent } from "@/lib/api";
 import withAuth from "@/lib/withAuth";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
-const page = () => {
+const StudentProfilePage = () => {
   const [student, setStudent] = useState(null);
+
   const personalInformationTitles = [
     "fullName",
     "level",
@@ -17,11 +19,12 @@ const page = () => {
     "nationality",
     "religion",
     "birthdate",
-    "placeOfBirth	",
+    "placeOfBirth",
     "nationalID",
     "releaseDate",
     "placeOfRelease",
   ];
+
   const contactInformationTitles = [
     "city",
     "address",
@@ -30,6 +33,7 @@ const page = () => {
     "fax",
     "mailBox",
   ];
+
   const educationInformationTitles = [
     "school",
     "qualification",
@@ -42,6 +46,7 @@ const page = () => {
     "yearOfEnrollment",
     "desires",
   ];
+
   const guardianInformationTitles = [
     "guardianName",
     "guardianJob",
@@ -51,6 +56,7 @@ const page = () => {
     "guardianMobile",
     "guardianEmail",
   ];
+
   useEffect(() => {
     handleGetStudent();
   }, []);
@@ -61,13 +67,53 @@ const page = () => {
       const { student } = await getStudent(user.username);
       setStudent(student);
     } catch (error) {
-      console.log(error);
+      toast.error(error || "Failed to fetch student");
     }
   }
 
+  const formatDate = (dateString) => {
+    return new Date(dateString).toISOString().split("T")[0];
+  };
+
+  const renderInfoTable = (titles, studentData) => (
+    <table className="min-w-full mb-8 text-left table-auto border-collapse">
+      <tbody className="max-sm:text-sm">
+        {titles.map((title, index) => (
+          <tr
+            className={`${index === 0 ? "border-t border-b" : "border-b"} flex`}
+            key={title}
+          >
+            <td className="px-4 py-2 font-semibold flex-1">
+              {title === "nationalID"
+                ? "National ID"
+                : title
+                    .replace(/([A-Z])/g, " $1")
+                    .trim()
+                    .split(" ")
+                    .map(
+                      (word) =>
+                        word.charAt(0).toUpperCase() +
+                        word.slice(1).toLowerCase()
+                    )
+                    .join(" ")}
+            </td>
+            <td className="px-4 py-2 flex-1">
+              {!studentData[title] || studentData[title] === ""
+                ? "-------"
+                : title === "birthdate" ||
+                  title === "releaseDate" ||
+                  title === "coordinationApprovalDate"
+                ? formatDate(studentData[title])
+                : studentData[title]}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+
   return student ? (
-    <div className="flex min-h-screen bg-gray-100">
-      {/* Main Content */}
+    <div className="flex min-h-screen">
       <div className="flex-1">
         <div className="max-sm:max-w-full max-md:mx-4 max-w-2xl lg:max-w-3xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
           {/* Header */}
@@ -75,11 +121,11 @@ const page = () => {
             <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold mb-2">
               Student Profile
             </h1>
-            {/* student image */}
-            {student && student.avatar ? (
+            {/* Student Avatar */}
+            {student.avatar ? (
               <div className="w-24 h-24 rounded-full mx-auto mb-4">
                 <Image
-                  src={student?.avatar}
+                  src={student.avatar}
                   alt="Student Avatar"
                   width={100}
                   height={100}
@@ -88,204 +134,56 @@ const page = () => {
                 />
               </div>
             ) : (
-              <div className="w-24 h-24 rounded-full bg-slate-100 mx-auto mb-4"></div>
+              <div className="w-24 h-24 rounded-full bg-gray-100 mx-auto mb-4"></div>
             )}
 
-            <p className="text-md sm:text-lg md:text-xl">{student?.fullName}</p>
+            <p className="text-md sm:text-lg md:text-xl">{student.fullName}</p>
             <p className="opacity-80 text-sm sm:text-md md:text-lg">
-              level: {student?.level}
+              Level: {student.level}
             </p>
             <p className="opacity-80 text-sm sm:text-md md:text-lg">
-              username: {student?.username}
+              Username: {student.username}
             </p>
             <p className="opacity-80 text-sm sm:text-md md:text-lg">
-              password: {student?.password}
+              Password: {student.password}
             </p>
           </div>
 
           {/* Tables Section */}
           <div className="p-4 sm:p-8">
-            {/* Personal Information Table */}
-            <h2
-              id="personal-info"
-              className="text-md sm:text-lg md:text-xl lg:text-2xl font-semibold mb-6 pb-2"
-            >
+            <h2 className="text-md sm:text-lg md:text-xl lg:text-2xl font-semibold mb-6 pb-2">
               Personal Information
             </h2>
-            <table className="min-w-full mb-8 text-left table-auto border-collapse">
-              <tbody className="max-sm:text-sm">
-                {personalInformationTitles.map((title, index) => (
-                  <tr
-                    className={`${
-                      index === 0 ? "border-t border-b" : "border-b"
-                    }`}
-                    key={title}
-                  >
-                    <td className="px-4 py-2 font-semibold">
-                      {title === "nationalID"
-                        ? "National ID"
-                        : title
-                            .replace(/([A-Z])/g, " $1")
-                            .trim()
-                            .split(" ")
-                            .map(
-                              (word) =>
-                                word.charAt(0).toUpperCase() +
-                                word.slice(1).toLowerCase()
-                            )
-                            .join(" ")}
-                    </td>
-                    <td className="px-4 py-2">
-                      {!student[title] || student[title] === ""
-                        ? "-------"
-                        : title === "birthdate" || title === "releaseDate"
-                        ? new Date(student[title]).toISOString().split("T")[0]
-                        : student[title]}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            {renderInfoTable(personalInformationTitles, student)}
 
-            {/* Contact Information Table */}
-            <h2
-              id="contact-info"
-              className="text-md sm:text-lg md:text-xl lg:text-2xl font-semibold mb-6 pb-2"
-            >
+            <h2 className="text-md sm:text-lg md:text-xl lg:text-2xl font-semibold mb-6 pb-2">
               Contact Information
             </h2>
-            <table className="min-w-full mb-8 text-left table-auto border-collapse">
-              <tbody className="max-sm:text-sm">
-                {contactInformationTitles.map((title, index) => (
-                  <tr
-                    className={`${
-                      index === 0 ? "border-t border-b" : "border-b"
-                    }`}
-                    key={title}
-                  >
-                    <td className="px-4 py-2 font-semibold">
-                      {title
-                        .replace(/([A-Z])/g, " $1")
-                        .trim()
-                        .split(" ")
-                        .map(
-                          (word) =>
-                            word.charAt(0).toUpperCase() +
-                            word.slice(1).toLowerCase()
-                        )
-                        .join(" ")}
-                    </td>
-                    <td className="px-4 py-2">
-                      {!student[title] || student[title] === ""
-                        ? "-------"
-                        : student[title]}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            {renderInfoTable(contactInformationTitles, student)}
 
-            {/* Guardian Information Table */}
-            <h2
-              id="guardian-info"
-              className="text-md sm:text-lg md:text-xl lg:text-2xl font-semibold mb-6 pb-2"
-            >
+            <h2 className="text-md sm:text-lg md:text-xl lg:text-2xl font-semibold mb-6 pb-2">
               Guardian Information
             </h2>
-            <table className="min-w-full mb-8 text-left table-auto border-collapse">
-              <tbody className="max-sm:text-sm">
-                {guardianInformationTitles.map((title, index) => (
-                  <tr
-                    className={`${
-                      index === 0 ? "border-t border-b" : "border-b"
-                    }`}
-                    key={title}
-                  >
-                    <td className="px-4 py-2 font-semibold">
-                      {title
-                        .replace(/([A-Z])/g, " $1")
-                        .trim()
-                        .split(" ")
-                        .map(
-                          (word) =>
-                            word.charAt(0).toUpperCase() +
-                            word.slice(1).toLowerCase()
-                        )
-                        .join(" ")}
-                    </td>
-                    <td className="px-4 py-2">
-                      {!student[title] || student[title] === ""
-                        ? "-------"
-                        : student[title]}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            {/* Educational Information Table */}
+            {renderInfoTable(guardianInformationTitles, student)}
 
-            <h2
-              id="educational-info"
-              className="text-md sm:text-lg md:text-xl lg:text-2xl font-semibold mb-6 pb-2"
-            >
+            <h2 className="text-md sm:text-lg md:text-xl lg:text-2xl font-semibold mb-6 pb-2">
               Educational Information
             </h2>
-            <table className="min-w-full mb-8 text-left table-auto border-collapse">
-              <tbody className="max-sm:text-sm">
-                {educationInformationTitles.map((title, index) => (
-                  <tr
-                    className={`${
-                      index === 0 ? "border-t border-b" : "border-b"
-                    }`}
-                    key={title}
-                  >
-                    <td className="px-4 py-2 font-semibold">
-                      {title
-                        .replace(/([A-Z])/g, " $1")
-                        .trim()
-                        .split(" ")
-                        .map(
-                          (word) =>
-                            word.charAt(0).toUpperCase() +
-                            word.slice(1).toLowerCase()
-                        )
-                        .join(" ")}
-                    </td>
-                    <td className="px-4 py-2">
-                      {!student[title] || student[title] === ""
-                        ? "-------"
-                        : title === "coordinationApprovalDate"
-                        ? new Date(student[title]).toISOString().split("T")[0]
-                        : student[title]}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            {renderInfoTable(educationInformationTitles, student)}
           </div>
         </div>
       </div>
     </div>
   ) : (
-    // skeleton
     <div className="flex min-h-screen">
       <div className="flex-1">
-        <div className="max-sm:max-w-full max-md:mx-4 max-w-2xl lg:max-w-3xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
+        <div className="max-sm:max-w-full max-md:mx-4 max-w-2xl lg:max-w-3xl mx-auto rounded-lg overflow-hidden">
           <div className="flex flex-col space-y-3">
-            <Skeleton className="h-[330px] w-full rounded-xl bg-slate-300" />
+            <Skeleton className="h-[330px] w-full rounded-xl" />
             <div className="grid grid-cols-2 gap-4">
-              <Skeleton className="h-8 w-full rounded bg-slate-300" />
-              <Skeleton className="h-8 w-full rounded bg-slate-300" />
-              <Skeleton className="h-8 w-full rounded bg-slate-300" />
-              <Skeleton className="h-8 w-full rounded bg-slate-300" />
-              <Skeleton className="h-8 w-full rounded bg-slate-300" />
-              <Skeleton className="h-8 w-full rounded bg-slate-300" />
-              <Skeleton className="h-8 w-full rounded bg-slate-300" />
-              <Skeleton className="h-8 w-full rounded bg-slate-300" />
-              <Skeleton className="h-8 w-full rounded bg-slate-300" />
-              <Skeleton className="h-8 w-full rounded bg-slate-300" />
-              <Skeleton className="h-8 w-full rounded bg-slate-300" />
-              <Skeleton className="h-8 w-full rounded bg-slate-300" />
+              {[...Array(12)].map((_, i) => (
+                <Skeleton key={i} className="h-8 w-full rounded bg-gray-300" />
+              ))}
             </div>
           </div>
         </div>
@@ -294,4 +192,4 @@ const page = () => {
   );
 };
 
-export default withAuth(page);
+export default withAuth(StudentProfilePage);

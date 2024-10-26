@@ -6,7 +6,6 @@ export async function GET(request, response) {
     const cookieStore = cookies();
     const token = cookieStore.get("token")?.value;
     const jwtSecret = process.env.NEXT_PUBLIC_JWT_SECRET;
-    let userData;
 
     if (!token) {
       return new Response(
@@ -20,14 +19,14 @@ export async function GET(request, response) {
       );
     }
 
-    await jwt.verify(token, jwtSecret, (err, user) => {
-      if (err) {
-        return new Response(JSON.stringify({ error: "Invalid token" }), {
-          status: 403,
-        });
-      }
+    // Verify the token synchronously
+    const userData = jwt.verify(token, jwtSecret);
 
-      userData = user;
+    return new Response(JSON.stringify({ user: userData }), {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      status: 200,
     });
 
     return new Response(JSON.stringify({ user: userData }), {

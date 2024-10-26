@@ -3,10 +3,10 @@ import React from "react";
 
 const page = () => {
   return (
-    <div className="w-full h-screen bg-slate-100 flex items-center justify-center">
+    <div className="w-full h-screen flex items-center justify-center">
       <Form formRole="login" />
     </div>
   );
 };
 
-export default page;
+export default React.memo(page);

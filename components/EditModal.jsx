@@ -97,7 +97,7 @@ const EditModal = ({ session, grade, day, tableType, onUpdate, onClose }) => {
             </button>
             <button
               type="submit"
-              className="bg-blue-500 text-white hover:bg-blue-700 rounded-md px-4 py-2"
+              className="bg-green-600 text-white hover:bg-green-700 rounded-md px-4 py-2"
             >
               Save
             </button>

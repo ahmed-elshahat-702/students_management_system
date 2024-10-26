@@ -19,21 +19,20 @@ import LogoutButton from "./LogoutButton";
 
 const Header = () => {
   const [user, setUser] = useState(null);
-
   const { setSidebarOpen } = useContext(SidebarContext);
 
   useEffect(() => {
-    getUser();
+    fetchUser();
   }, []);
 
-  async function getUser() {
+  const fetchUser = async () => {
     try {
-      const authRes = await authorize();
-      setUser(authRes.user);
+      const { user: authUser } = await authorize();
+      setUser(authUser);
     } catch (error) {
-      console.log(error);
+      console.error("Error fetching user data:", error);
     }
-  }
+  };
 
   return (
     <header className="header fixed top-0 left-0 w-full lg:pl-72 bg-white/75 border-b shadow">
@@ -42,8 +41,8 @@ const Header = () => {
           {/* Sidebar toggle button for mobile */}
           <button
             className="lg:hidden text-xl text-gray-600 mr-4"
-            name="menu-button"
             onClick={() => setSidebarOpen(true)}
+            aria-label="Open menu"
           >
             <FaBars />
           </button>
@@ -66,14 +65,14 @@ const Header = () => {
                         src={user.avatar}
                         width={36}
                         height={36}
-                        alt="Avatar"
-                        className="overflow-hidden rounded-full"
+                        alt="User Avatar"
+                        className="rounded-full"
                       />
                     ) : (
-                      <div className="w-full h-full rounded-full bg-slate-300"></div>
+                      <div className="w-full h-full rounded-full bg-gray-300"></div>
                     )
                   ) : (
-                    <Skeleton className="w-full h-full rounded-full bg-slate-300" />
+                    <Skeleton className="w-full h-full rounded-full bg-gray-300" />
                   )}
                 </Button>
               </DropdownMenuTrigger>
@@ -94,7 +93,7 @@ const Header = () => {
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
-                  <LogoutButton className="w-full" />
+                  <LogoutButton />
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

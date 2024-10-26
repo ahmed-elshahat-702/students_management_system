@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import React, { useEffect, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
@@ -13,12 +13,13 @@ import { useEdgeStore } from "@/lib/edgestore";
 
 const AddStudentForm = () => {
   const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   const { edgestore } = useEdgeStore();
   const [file, setFile] = useState(null);
   const [progress, setProgress] = useState(0);
 
-  const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
   const initialValues = {
     username: "",
     password: "",
@@ -66,13 +67,12 @@ const AddStudentForm = () => {
   const usernameRegex = /^[a-zA-Z0-9]{3,15}$/;
   const passwordRegex = /^[A-Za-z\d@$!%*?&]{8,}$/;
 
-  function checkInfoValidity({ x, y }) {
-    if (usernameRegex.test(x) && passwordRegex.test(y)) {
-      return true;
-    } else {
-      return false;
-    }
-  }
+  const isFormValid = useMemo(
+    () =>
+      usernameRegex.test(studentData.username) &&
+      passwordRegex.test(studentData.password),
+    [studentData.username, studentData.password]
+  );
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -85,26 +85,49 @@ const AddStudentForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
 
-    const formData = new FormData();
-    Object.keys(studentData).forEach((key) => {
-      formData.append(key, studentData[key]);
-    });
+    if (isFormValid) {
+      setLoading(true);
 
-    if (file) {
-      try {
-        toast.dismiss();
-        toast.loading(`Uploading Avatar...${progress}`);
-        const res = await edgestore.publicFiles.upload({
-          file,
-          onProgressChange: (recentProgress) => {
-            setProgress(recentProgress);
-          },
-        });
-        setProgress;
-        0;
-        formData.append("avatar", res.url);
+      const formData = new FormData();
+      Object.keys(studentData).forEach((key) => {
+        formData.append(key, studentData[key]);
+      });
+
+      if (file) {
+        try {
+          toast.dismiss();
+          toast.loading(`Uploading Avatar...${progress}`);
+          const res = await edgestore.publicFiles.upload({
+            file,
+            onProgressChange: (recentProgress) => {
+              setProgress(recentProgress);
+            },
+          });
+          setProgress;
+          0;
+          formData.append("avatar", res.url);
+          try {
+            toast.dismiss();
+            toast.loading("Adding Student...");
+            const response = await addStudent(formData);
+            toast.dismiss();
+            toast.success(response.message);
+            router.push("/moderator/students");
+            setStudentData(initialValues);
+          } catch (error) {
+            toast.dismiss();
+            toast.error(error || "An error occurred");
+          } finally {
+            setLoading(false);
+          }
+        } catch (error) {
+          toast.dismiss();
+          toast.error(error);
+        } finally {
+          setLoading(false);
+        }
+      } else {
         try {
           toast.dismiss();
           toast.loading("Adding Student...");
@@ -119,26 +142,6 @@ const AddStudentForm = () => {
         } finally {
           setLoading(false);
         }
-      } catch (error) {
-        toast.dismiss();
-        toast.error(error.message);
-      } finally {
-        setLoading(false);
-      }
-    } else {
-      try {
-        toast.dismiss();
-        toast.loading("Adding Student...");
-        const response = await addStudent(formData);
-        toast.dismiss();
-        toast.success(response.message);
-        router.push("/moderator/students");
-        setStudentData(initialValues);
-      } catch (error) {
-        toast.dismiss();
-        toast.error(error || "An error occurred");
-      } finally {
-        setLoading(false);
       }
     }
   };
@@ -170,13 +173,15 @@ const AddStudentForm = () => {
           <div className="flex items-center gap-1">
             <div className="w-3 h-3 border rounded-full"></div>
             <p
-              className={`text-sm text-gray-500 ${
-                checkInfoValidity({ x: studentData.username })
-                  ? "text-green-600"
-                  : "text-red-600"
+              className={`text-sm ${
+                studentData.username
+                  ? usernameRegex.test(studentData.username)
+                    ? "text-green-600"
+                    : "text-red-600"
+                  : "text-gray-500"
               }`}
             >
-              username must be 3 to 15 characters.
+              Username must be 3 to 15 characters.
             </p>
           </div>
         </div>
@@ -211,13 +216,15 @@ const AddStudentForm = () => {
           <div className="flex items-center gap-1">
             <div className="w-3 h-3 border rounded-full"></div>
             <p
-              className={`text-sm text-gray-500 ${
-                checkInfoValidity({ y: studentData.password })
-                  ? "text-green-600"
-                  : "text-red-600"
+              className={`text-sm ${
+                studentData.password
+                  ? passwordRegex.test(studentData.password)
+                    ? "text-green-600"
+                    : "text-red-600"
+                  : "text-gray-500"
               }`}
             >
-              password must be at least 8 characters.
+              Password must be at least 8 characters.
             </p>
           </div>
         </div>
@@ -251,7 +258,7 @@ const AddStudentForm = () => {
             name="avatar"
             id="avatar"
             onChange={handleFileChange}
-            className="border-none p-1 shadow-none file:mr-4 file:py-1 file:px-4 file:bg-blue-600 file:rounded-full file:border-0 file:text-sm file:font-semibold file:text-white hover:file:bg-blue-800 cursor-pointer file:cursor-pointer"
+            className="border-none p-1 shadow-none file:mr-4 file:py-1 file:px-4 file:bg-green-600 file:rounded-full file:border-0 file:text-sm file:font-semibold file:text-white hover:file:bg-green-800 cursor-pointer file:cursor-pointer"
           />
         </div>
         {/* Full Name */}
@@ -825,14 +832,17 @@ const AddStudentForm = () => {
           </div>
         </div>
       </div>
-
       {loading ? (
-        <Button disabled>
-          <Loader2 className=" w-full py-2 animate-spin rounded" />
+        <Button disabled className="w-full">
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           Please wait
         </Button>
       ) : (
-        <Button className="w-full py-2 bg-blue-500 text-white hover:bg-blue-700 rounded">
+        <Button
+          type="submit"
+          className="bg-green-600 hover:bg-green-700 w-full"
+          disabled={!isFormValid}
+        >
           Add Student
         </Button>
       )}

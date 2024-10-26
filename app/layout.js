@@ -10,7 +10,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={` bg-slate-100`} suppressHydrationWarning={true}>
+      <body className="bg-gray-200" suppressHydrationWarning={true}>
         <main>
           <EdgeStoreProvider>{children}</EdgeStoreProvider>
         </main>
