@@ -37,3 +37,48 @@ export async function GET() {
     });
   }
 }
+
+export async function POST(request) {
+  await dbConnect();
+  try {
+    const studentData = await request.formData();
+    const studentDataObject = Object.fromEntries(studentData);
+    const avatar = studentDataObject.avatar;
+
+    const existingStudent = await StudentModel.findOne({
+      username: studentDataObject.username,
+    });
+
+    if (existingStudent) {
+      return new Response(JSON.stringify({ error: "Student already exists" }), {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        status: 400,
+      });
+    }
+
+    const newStudent = new StudentModel({
+      ...studentDataObject,
+      avatar: avatar || undefined, // only set avatar if it exists
+    });
+    await newStudent.save();
+
+    return new Response(
+      JSON.stringify({ message: "Student added successfully" }),
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        status: 201,
+      }
+    );
+  } catch (error) {
+    return new Response(JSON.stringify({ error: error.message }), {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      status: 500,
+    });
+  }
+}

@@ -1,128 +1,176 @@
 "use client";
 
-import { FaTimes } from "react-icons/fa";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState, useContext } from "react";
-import { SidebarContext } from "./SidebarProvider";
+import { useEffect, useState, useMemo } from "react";
 import { authorize } from "@/lib/api";
-import { Skeleton } from "./ui/skeleton";
+import { Skeleton } from "@/components/ui/skeleton"; // Using the normal Skeleton component
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuSkeleton,
+  SidebarSeparator,
+} from "@/components/ui/sidebar";
+import Link from "next/link";
+
+const navLinks = {
+  student: [
+    "Main Info",
+    "Tables",
+    "Poll",
+    "Absence Report",
+    "Course Grades",
+    "Payment and Expenses",
+    "Academic Registration",
+    "Results",
+    "Warnings",
+    "Student Progress",
+    "Registration Form",
+    "Academic Warnings",
+  ],
+  moderator: ["Students", "Teachers", "Tables"],
+  teacher: [
+    "Main Info",
+    "Tables",
+    "Poll",
+    "Absence Report",
+    "Course Grades",
+    "Electronic Payment",
+    "Academic Registration",
+    "Study Expenses",
+    "Course Results",
+    "Warning of Unregistered Student",
+    "Student Progress",
+    "Payment Authorization",
+    "Registration Form",
+    "Academic Warnings",
+    "Military Education Result",
+  ],
+};
 
 const SideBar = () => {
   const [user, setUser] = useState(null);
-  const [activeLink, setActiveLink] = useState("");
+  const [activeLink, setActiveLink] = useState(null);
+  const [loading, setLoading] = useState(true);
   const pathname = usePathname();
-  const { sidebarOpen, setSidebarOpen } = useContext(SidebarContext);
 
   useEffect(() => {
+    const fetchUser = async () => {
+      setLoading(true);
+      try {
+        const { user: authUser } = await authorize();
+        setUser(authUser);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchUser();
     setActiveLink(getActiveLink(pathname));
   }, [pathname]);
-
-  const fetchUser = async () => {
-    try {
-      const { user: authUser } = await authorize();
-      setUser(authUser);
-    } catch (error) {
-      console.error("Error fetching user data:", error);
-    }
-  };
 
   const getActiveLink = (path) => {
     const pathSegments = path.split("/");
     return pathSegments[pathSegments.length - 1];
   };
 
-  const navLinks = {
-    student: [
-      "Main Info",
-      "Tables",
-      "Poll",
-      "Absence report",
-      "Course grades",
-      "Payment And Expenses",
-      "Academic registration",
-      "Results",
-      "Warnings",
-      "Student progress",
-      "Registration form",
-      "Academic warnings",
-    ],
-    moderator: ["Students", "Teachers", "Tables"],
-    teacher: [
-      "Main Info",
-      "Tables",
-      "Poll",
-      "Absence report",
-      "Course grades",
-      "Electronic payment",
-      "Academic registration",
-      "Study expenses",
-      "Course results",
-      "Warning of an unregistered student",
-      "Student progress",
-      "Payment authorization",
-      "Registration form",
-      "Academic warnings",
-      "The result of military education",
-    ],
-  };
+  const renderNavLinks = (roleLinks, basePath) =>
+    roleLinks.map((link, index) => {
+      const formattedLink = link.replace(/\s+/g, "-").toLowerCase();
+      const isActive = activeLink === formattedLink;
 
-  const renderNavLinks = (roleLinks, basePath) => {
-    return roleLinks.map((link, index) => (
-      <Link
-        key={index}
-        href={`/${basePath}/${link.replace(/\s+/g, "-").toLowerCase()}`}
-        className={`block p-2 rounded transition-colors duration-300 ${
-          activeLink === link.replace(/\s+/g, "-").toLowerCase()
-            ? "bg-green-600 text-white hover:bg-green-700"
-            : "bg-gray-100 hover:bg-gray-200"
-        }`}
-      >
-        {link}
-      </Link>
-    ));
-  };
+      return (
+        <Link
+          key={index}
+          href={`/${basePath}/${formattedLink}`}
+          className={`group flex items-center p-2 rounded-md transition-all duration-300 ${
+            isActive
+              ? "bg-foreground dark:bg-secondary font-medium"
+              : " hover:bg-secondary"
+          }`}
+        >
+          <span
+            className={`text-md ${isActive ? "text-white" : "text-gray-600"}`}
+          >
+            {link}
+          </span>
+        </Link>
+      );
+    });
+
+  const navLinksToRender = useMemo(() => {
+    if (loading) {
+      return (
+        <SidebarMenuItem className="space-y-1">
+          <Skeleton className="h-5 w-full" style={{ width: "90%" }} />
+          <Skeleton className="h-5 w-full" style={{ width: "70%" }} />
+          <Skeleton className="h-5 w-full" style={{ width: "80%" }} />
+          <Skeleton className="h-5 w-full" style={{ width: "40%" }} />
+          <Skeleton className="h-5 w-full" style={{ width: "30%" }} />
+          <Skeleton className="h-5 w-full" style={{ width: "40%" }} />
+          <Skeleton className="h-5 w-full" style={{ width: "60%" }} />
+          <Skeleton className="h-5 w-full" style={{ width: "30%" }} />
+          <Skeleton className="h-5 w-full" style={{ width: "70%" }} />
+          <Skeleton className="h-5 w-full" style={{ width: "90%" }} />
+          <Skeleton className="h-5 w-full" style={{ width: "30%" }} />
+          <Skeleton className="h-5 w-full" style={{ width: "50%" }} />
+          <Skeleton className="h-5 w-full" style={{ width: "30%" }} />
+          <Skeleton className="h-5 w-full" style={{ width: "70%" }} />
+          <Skeleton className="h-5 w-full" style={{ width: "40%" }} />
+          <Skeleton className="h-5 w-full" style={{ width: "80%" }} />
+          <Skeleton className="h-5 w-full" style={{ width: "50%" }} />
+          <Skeleton className="h-5 w-full" style={{ width: "70%" }} />
+          <Skeleton className="h-5 w-full" style={{ width: "60%" }} />
+          <Skeleton className="h-5 w-full" style={{ width: "80%" }} />
+        </SidebarMenuItem>
+      );
+    }
+
+    if (user) {
+      switch (user.role) {
+        case "student":
+          return renderNavLinks(navLinks.student, "student");
+        case "moderator":
+          return renderNavLinks(navLinks.moderator, "moderator");
+        case "teacher":
+          return renderNavLinks(navLinks.teacher, "teacher");
+        default:
+          return null;
+      }
+    }
+
+    return <p className="text-gray-600">No user data available.</p>;
+  }, [loading, user, activeLink]);
 
   return (
-    <aside
-      className={`fixed z-40 inset-y-0 left-0 bg-white shadow w-72 overflow-y-auto p-6 transform ${
-        sidebarOpen ? "translate-x-0" : "-translate-x-full"
-      } transition-transform duration-300 ease-in-out lg:translate-x-0`}
-    >
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-bold border-b-4 border-dashed border-green-600">
-          University System
-        </h2>
-        <button
-          className="lg:hidden"
-          onClick={() => setSidebarOpen(false)}
-          aria-label="Close sidebar"
-        >
-          <FaTimes />
-        </button>
-      </div>
-      <nav className="space-y-1 text-md">
-        {user ? (
-          user.role === "student" ? (
-            renderNavLinks(navLinks.student, "student")
-          ) : user.role === "moderator" ? (
-            renderNavLinks(navLinks.moderator, "moderator")
-          ) : user.role === "teacher" ? (
-            renderNavLinks(navLinks.teacher, "teacher")
-          ) : null
-        ) : (
-          <div className="flex flex-col gap-1">
-            {Array.from({ length: 8 }).map((_, index) => (
-              <Skeleton
-                key={index}
-                className="w-full h-8 rounded bg-gray-300"
-              />
-            ))}
-          </div>
-        )}
-      </nav>
-    </aside>
+    <Sidebar className="bg-background/80 backdrop-blur-lg border-r shadow-sm">
+      <SidebarHeader className="my-3">
+        <h1 className="text-lg font-semibold">University System</h1>
+      </SidebarHeader>
+      <SidebarSeparator className="bg-secondary" />
+      <SidebarContent className="py-3">
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>{navLinksToRender}</SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+      <SidebarSeparator className="bg-secondary" />
+      <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <span className="text-sm">Coded by: Ahmed Elshahat</span>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
+    </Sidebar>
   );
 };
 

@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
-import toast from "react-hot-toast";
+import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
 import EntityTable from "./EntityTable";
 import { FaPlus } from "react-icons/fa";
+import ConfirmModal from "./ConfirmModal";
+import { useEdgeStore } from "@/lib/edgestore";
 
 const EntityPage = ({
   fetchEntities,
@@ -12,47 +14,68 @@ const EntityPage = ({
 }) => {
   const [entities, setEntities] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isModalOpened, setIsModalOpened] = useState(false);
+  const [entityToDelete, setEntityToDelete] = useState(null);
+  const { toast } = useToast();
+  const { edgestore } = useEdgeStore();
 
   useEffect(() => {
     fetchAllEntities();
-  }, []);
+  }, [fetchEntities, entityType]);
 
   const fetchAllEntities = async () => {
     setLoading(true);
     try {
       const data = await fetchEntities();
-      entityType === "Student" && setEntities(data.students || []);
-      entityType === "Teacher" && setEntities(data.teachers || []);
+      if (entityType === "Student") {
+        setEntities(data.students || []);
+      } else if (entityType === "Teacher") {
+        setEntities(data.teachers || []);
+      } else {
+        setEntities(data || []);
+      }
     } catch (error) {
-      toast.error(error || `Failed to fetch ${entityType.toLowerCase()}s`);
+      toast({
+        variant: "destructive",
+        description:
+          error.message || `Failed to fetch ${entityType.toLowerCase()}s`,
+      });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDeleteEntity = async (entity) => {
-    setLoading(true);
-    toast.loading(`Deleting ${entityType.toLowerCase()}...`);
+  const handleDeleteEntity = (entity) => {
+    setEntityToDelete(entity);
+    setIsModalOpened(true);
+  };
 
-    const confirmDelete = window.confirm(
-      `Are you sure you want to delete this ${entityType.toLowerCase()}?`
-    );
-    if (!confirmDelete) {
-      toast.dismiss();
-      setLoading(false);
-      return;
-    }
-
+  const handleConfirmDelete = async () => {
+    toast({
+      description: `Deleting ${entityType.toLowerCase()}...`,
+      variant: "loading",
+    });
     try {
-      const response = await deleteEntity(entity.username);
-      toast.dismiss();
-      toast.success(response.message);
-      fetchAllEntities();
+      if (entityToDelete.avatar) {
+        await edgestore.publicFiles.delete({
+          url: entityToDelete.avatar,
+        });
+      }
+      const res = await deleteEntity(entityToDelete._id);
+      toast({
+        title: "Success",
+        description: res.message || `${entityType} deleted successfully`,
+      });
+      await fetchAllEntities();
     } catch (error) {
-      toast.dismiss();
-      toast.error(error || `An error occurred while deleting`);
+      toast({
+        variant: "destructive",
+        description:
+          error.message || `Failed to delete ${entityType.toLowerCase()}`,
+      });
     } finally {
-      setLoading(false);
+      setEntityToDelete(null);
+      setIsModalOpened(false);
     }
   };
 
@@ -74,7 +97,17 @@ const EntityPage = ({
           loading={loading}
           deleteEntity={handleDeleteEntity}
           entityType={entityType}
+          fetchAllEntities={fetchAllEntities}
         />
+        {isModalOpened && (
+          <ConfirmModal
+            isOpen={isModalOpened}
+            onClose={() => setIsModalOpened(false)}
+            onConfirm={handleConfirmDelete}
+            title={`Delete ${entityType}`}
+            description={`Are you sure you want to delete this ${entityType.toLowerCase()}?`}
+          />
+        )}
       </div>
     </main>
   );

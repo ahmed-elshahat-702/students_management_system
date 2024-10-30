@@ -1,10 +1,10 @@
 "use client";
 
-import { getAllGradesTables } from "@/lib/api";
+import { getAllGradesTables, updateGradeTable } from "@/lib/api";
 import withAuth from "@/lib/withAuth";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import ScheduleTable from "@/components/SchedualTable";
+import ScheduleTable from "@/components/ScheduleTable";
 
 const page = () => {
   const [grade1Tables, setGrade1Tables] = useState(null);
@@ -16,6 +16,7 @@ const page = () => {
   useEffect(() => {
     fetchGrades();
   }, []);
+
   const fetchGrades = async () => {
     toast.dismiss();
     toast.loading("Fetching tables...");
@@ -37,11 +38,22 @@ const page = () => {
       toast.success("Tables fetched successfully");
     } catch (error) {
       toast.dismiss();
-      toast.error(error);
+      toast.error(error.message);
     } finally {
       setLoading(false);
     }
   };
+
+  const handleSave = async (grade, updatedTable) => {
+    try {
+      await updateGradeTable(grade, updatedTable);
+      toast.success("Table updated successfully");
+      fetchGrades(); // Refresh the tables
+    } catch (error) {
+      toast.error("Failed to update table");
+    }
+  };
+
   return (
     <div className="p-8 min-h-screen">
       {loading ? (
@@ -56,26 +68,38 @@ const page = () => {
             tableData={grade1Tables.studyTable}
             grade="Grade 1"
             colorGradient="from-green-600 to-green-700"
+            onSave={(updatedTable) =>
+              handleSave("1", { studyTable: updatedTable })
+            }
           />
           <ScheduleTable
             scheduleType="exams"
             tableData={grade1Tables.examsTable}
             grade="Grade 1"
             colorGradient="from-green-600 to-green-700"
+            onSave={(updatedTable) =>
+              handleSave("1", { examsTable: updatedTable })
+            }
           />
 
-          {/* Grade  2 */}
+          {/* Grade 2 */}
           <ScheduleTable
             scheduleType="study"
             tableData={grade2Tables.studyTable}
             grade="Grade 2"
             colorGradient="from-green-600 to-green-700"
+            onSave={(updatedTable) =>
+              handleSave("2", { studyTable: updatedTable })
+            }
           />
           <ScheduleTable
             scheduleType="exams"
             tableData={grade2Tables.examsTable}
             grade="Grade 2"
             colorGradient="from-green-600 to-green-700"
+            onSave={(updatedTable) =>
+              handleSave("2", { examsTable: updatedTable })
+            }
           />
 
           {/* Grade 3 */}
@@ -84,12 +108,18 @@ const page = () => {
             tableData={grade3Tables.studyTable}
             grade="Grade 3"
             colorGradient="from-purple-500 to-purple-700"
+            onSave={(updatedTable) =>
+              handleSave("3", { studyTable: updatedTable })
+            }
           />
           <ScheduleTable
             scheduleType="exams"
             tableData={grade3Tables.examsTable}
             grade="Grade 3"
             colorGradient="from-purple-500 to-purple-700"
+            onSave={(updatedTable) =>
+              handleSave("3", { examsTable: updatedTable })
+            }
           />
 
           {/* Grade 4 */}
@@ -98,16 +128,23 @@ const page = () => {
             tableData={grade4Tables.studyTable}
             grade="Grade 4"
             colorGradient="from-orange-500 to-orange-700"
+            onSave={(updatedTable) =>
+              handleSave("4", { studyTable: updatedTable })
+            }
           />
           <ScheduleTable
             scheduleType="exams"
             tableData={grade4Tables.examsTable}
             grade="Grade 4"
             colorGradient="from-orange-500 to-orange-700"
+            onSave={(updatedTable) =>
+              handleSave("4", { examsTable: updatedTable })
+            }
           />
         </div>
       )}
     </div>
   );
 };
+
 export default withAuth(page);

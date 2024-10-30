@@ -11,20 +11,26 @@ export async function POST(request, response) {
   const jwtSecret = process.env.NEXT_PUBLIC_JWT_SECRET;
 
   try {
-    const { username, password, role } = await request.json();
+    const { usernameOrEmail, password, role } = await request.json();
 
     let user;
 
     // Find user based on role
     switch (role) {
       case "student":
-        user = await StudentModel.findOne({ username });
+        user = await StudentModel.findOne({
+          $or: [{ username: usernameOrEmail }, { systemMail: usernameOrEmail }],
+        });
         break;
       case "teacher":
-        user = await TeacherModel.findOne({ username });
+        user = await TeacherModel.findOne({
+          $or: [{ username: usernameOrEmail }, { systemMail: usernameOrEmail }],
+        });
         break;
       case "moderator":
-        user = await ModeratorModel.findOne({ username });
+        user = await ModeratorModel.findOne({
+          $or: [{ username: usernameOrEmail }, { systemMail: usernameOrEmail }],
+        });
         break;
       default:
         return new Response(JSON.stringify({ error: "Invalid role" }), {
@@ -40,7 +46,7 @@ export async function POST(request, response) {
       });
     }
 
-    // Check if the password is correct using bcrypt
+    // Check if the password is correct (use bcrypt for secure password comparison)
     const isPasswordValid = password === user.password;
 
     if (!isPasswordValid) {
@@ -55,7 +61,7 @@ export async function POST(request, response) {
 
     // Generate JWT token
     const token = jwt.sign(
-      { username, role, avatar: user.avatar, level: user.level },
+      { username: user.username, role, avatar: user.avatar, level: user.level },
       jwtSecret,
       { expiresIn: "1d" }
     );
@@ -70,7 +76,7 @@ export async function POST(request, response) {
     });
 
     // Return the user data minus the password
-    const { password: _, ...userData } = user._doc; // exclude password
+    const { password: _, ...userData } = user._doc; // Exclude password
     return new Response(JSON.stringify({ user: userData }), {
       headers: { "Content-Type": "application/json" },
       status: 200,
