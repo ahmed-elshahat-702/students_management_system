@@ -71,6 +71,7 @@ const page = () => {
             onSave={(updatedTable) =>
               handleSave("1", { studyTable: updatedTable })
             }
+            isModerator={true}
           />
           <ScheduleTable
             scheduleType="exams"
@@ -80,6 +81,7 @@ const page = () => {
             onSave={(updatedTable) =>
               handleSave("1", { examsTable: updatedTable })
             }
+            isModerator={true}
           />
 
           {/* Grade 2 */}
@@ -91,6 +93,7 @@ const page = () => {
             onSave={(updatedTable) =>
               handleSave("2", { studyTable: updatedTable })
             }
+            isModerator={true}
           />
           <ScheduleTable
             scheduleType="exams"
@@ -100,6 +103,7 @@ const page = () => {
             onSave={(updatedTable) =>
               handleSave("2", { examsTable: updatedTable })
             }
+            isModerator={true}
           />
 
           {/* Grade 3 */}
@@ -111,6 +115,7 @@ const page = () => {
             onSave={(updatedTable) =>
               handleSave("3", { studyTable: updatedTable })
             }
+            isModerator={true}
           />
           <ScheduleTable
             scheduleType="exams"
@@ -120,6 +125,7 @@ const page = () => {
             onSave={(updatedTable) =>
               handleSave("3", { examsTable: updatedTable })
             }
+            isModerator={true}
           />
 
           {/* Grade 4 */}
@@ -131,6 +137,7 @@ const page = () => {
             onSave={(updatedTable) =>
               handleSave("4", { studyTable: updatedTable })
             }
+            isModerator={true}
           />
           <ScheduleTable
             scheduleType="exams"
@@ -140,6 +147,7 @@ const page = () => {
             onSave={(updatedTable) =>
               handleSave("4", { examsTable: updatedTable })
             }
+            isModerator={true}
           />
         </div>
       )}

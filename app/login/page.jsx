@@ -103,13 +103,19 @@ const page = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen ">
-      <Card className="w-full max-w-md relative bg-background border-none">
-        <ThemeToggler className="absolute top-2 right-2" />
+    <div className="flex items-center justify-center min-h-screen p-0 [&>*]:rounded-none [@media(min-width:388px)]:p-4">
+      <Card className="w-full [@media(min-width:388px)]:max-w-md [@media(min-width:388px)]:rounded-lg relative bg-background border-none mx-auto h-screen [@media(min-width:388px)]:h-auto">
+        <div className="absolute right-2 top-2">
+          <ThemeToggler />
+        </div>
 
-        <CardHeader>
-          <CardTitle>University Management System</CardTitle>
-          <CardDescription>Login to access your account</CardDescription>
+        <CardHeader className="space-y-1 max-sm:p-8">
+          <CardTitle className="text-2xl md:text-3xl text-center">
+            University Management System
+          </CardTitle>
+          <CardDescription className="text-center">
+            Login to access your account
+          </CardDescription>
         </CardHeader>
         <form onSubmit={handleLogin}>
           <CardContent className="space-y-4">
@@ -166,7 +172,10 @@ const page = () => {
             </div>
             <div className="space-y-2">
               <Label>Role</Label>
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4">
+                <p className="text-sm text-muted-foreground col-span-1 sm:col-span-3 mb-1">
+                  Please select a role to continue
+                </p>
                 {["Student", "Teacher", "Moderator"].map((option) => (
                   <Button
                     key={option}
@@ -174,7 +183,7 @@ const page = () => {
                     variant={
                       role === option.toLowerCase() ? "default" : "outline"
                     }
-                    className={`w-full justify-start ${
+                    className={`w-full justify-center sm:justify-start py-2 px-4 text-sm ${
                       role === option.toLowerCase()
                         ? "bg-primary text-primary-foreground"
                         : ""
@@ -182,7 +191,7 @@ const page = () => {
                     onClick={() => setRole(option.toLowerCase())}
                   >
                     {role === option.toLowerCase() && (
-                      <CheckCircle2 className="w-4 h-4 mr-2" />
+                      <CheckCircle2 className="w-4 h-4 mr-2 hidden sm:inline-block" />
                     )}
                     {option}
                   </Button>
@@ -197,7 +206,7 @@ const page = () => {
             </div>
           </CardContent>
           <CardFooter>
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            <Button type="submit" className="w-full py-2" disabled={isLoading}>
               {isLoading ? "Logging in..." : "Login"}
             </Button>
           </CardFooter>

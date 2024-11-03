@@ -18,12 +18,12 @@ const EntityTable = ({
     );
   };
   return (
-    <>
-      <div className="flex justify-between items-center mb-8">
+    <div className="w-full overflow-x-auto">
+      <div className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
         <h2 className="text-2xl font-bold">{`${entityType} List`}</h2>
         <Button
           onClick={() => fetchAllEntities()}
-          className="bg-background hover:bg-background/70 text-foreground rounded flex items-center gap-2"
+          className="w-full sm:w-auto bg-background hover:bg-background/70 text-foreground rounded flex items-center gap-2 justify-center"
           disabled={loading}
         >
           {loading ? (
@@ -52,70 +52,76 @@ const EntityTable = ({
         </Button>
       </div>
       {loading ? (
-        <div className="flex justify-center items-center">
+        <div className="flex justify-center items-center p-8">
           <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-green-600 border-solid"></div>
         </div>
       ) : entities.length !== 0 ? (
-        <table className="min-w-full table-auto bg-background shadow-md rounded overflow-hidden">
-          <thead className="bg-green-600 text-white">
-            <tr>
-              <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
-                {`${entityType} Name`}
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
-                {`${entityType} Code`}
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
-                Username
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
-                Password
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
-                Functions
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {entities.map((entity, index) => (
-              <tr
-                key={entity.username}
-                className={`hover:bg-secondary/70 ${
-                  index % 2 === 0 ? "bg-background" : "bg-secondary"
-                }`}
-              >
-                <td className="px-6 py-4 text-sm">{entity.fullName}</td>
-                <td className="px-6 py-4 text-sm">{entity.code}</td>
-                <td className="px-6 py-4 text-sm">{entity.username}</td>
-                <td className="px-6 py-4 text-sm">{entity.password}</td>
-                <td className="px-6 py-4 text-sm flex gap-2">
-                  <Button
-                    className="bg-green-600 hover:bg-green-700 text-white rounded flex items-center gap-2"
-                    onClick={() => handleEdit(entity)}
-                    disabled={loading}
-                  >
-                    Edit <FaEdit />
-                  </Button>
-                  <Button
-                    className={`bg-red-600 hover:bg-red-700 text-white rounded flex items-center gap-2 ${
-                      loading ? "opacity-50 cursor-not-allowed" : ""
-                    }`}
-                    onClick={() => deleteEntity(entity)}
-                    disabled={loading}
-                  >
-                    Delete <FaTrash />
-                  </Button>
-                </td>
+        <div className="overflow-x-auto">
+          <table className="w-full table-auto bg-background shadow-md rounded overflow-hidden min-w-[800px]">
+            <thead className="bg-green-600 text-white">
+              <tr>
+                <th className="px-4 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                  {`${entityType} Name`}
+                </th>
+                <th className="px-4 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                  {`${entityType} Code`}
+                </th>
+                <th className="px-4 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                  Username
+                </th>
+                <th className="px-4 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                  Password
+                </th>
+                <th className="px-4 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                  Functions
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {entities.map((entity, index) => (
+                <tr
+                  key={entity.username}
+                  className={`hover:bg-secondary/70 ${
+                    index % 2 === 0 ? "bg-background" : "bg-secondary"
+                  }`}
+                >
+                  <td className="px-4 py-3 text-sm">{entity.fullName}</td>
+                  <td className="px-4 py-3 text-sm">{entity.code}</td>
+                  <td className="px-4 py-3 text-sm">{entity.username}</td>
+                  <td className="px-4 py-3 text-sm">{entity.password}</td>
+                  <td className="px-4 py-3 text-sm">
+                    <div className="flex flex-wrap gap-2">
+                      <Button
+                        className="bg-green-600 hover:bg-green-700 text-white rounded flex items-center gap-2 text-sm"
+                        onClick={() => handleEdit(entity)}
+                        disabled={loading}
+                      >
+                        <span className="hidden sm:inline">Edit</span>{" "}
+                        <FaEdit />
+                      </Button>
+                      <Button
+                        className={`bg-red-600 hover:bg-red-700 text-white rounded flex items-center gap-2 text-sm ${
+                          loading ? "opacity-50 cursor-not-allowed" : ""
+                        }`}
+                        onClick={() => deleteEntity(entity)}
+                        disabled={loading}
+                      >
+                        <span className="hidden sm:inline">Delete</span>{" "}
+                        <FaTrash />
+                      </Button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       ) : (
-        <h1 className="text-center text-2xl font-bold">
+        <h1 className="text-center text-xl sm:text-2xl font-bold p-8">
           There are no {entityType.toLowerCase()}s yet
         </h1>
       )}
-    </>
+    </div>
   );
 };
 

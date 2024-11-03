@@ -1,5 +1,17 @@
 import React, { useState } from "react";
-import { FaEdit, FaSave, FaPlus, FaTrash, FaTimes } from "react-icons/fa";
+import {
+  FaEdit,
+  FaSave,
+  FaPlus,
+  FaTrash,
+  FaTimes,
+  FaMapMarkerAlt,
+  FaCalendarDay,
+  FaBook,
+  FaClock,
+  FaCog,
+} from "react-icons/fa";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const days = [
   "Sunday",
@@ -17,9 +29,11 @@ const ScheduleTable = ({
   grade,
   colorGradient,
   onSave,
+  isModerator,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedData, setEditedData] = useState(tableData || {});
+  const isMobile = useIsMobile();
 
   const handleEditClick = () => {
     setIsEditing(true);
@@ -31,7 +45,7 @@ const ScheduleTable = ({
   };
 
   const handleCancelClick = () => {
-    setEditedData(tableData || {}); // Ensure tableData is an object
+    setEditedData(tableData || {});
     setIsEditing(false);
   };
 
@@ -76,68 +90,90 @@ const ScheduleTable = ({
   };
 
   return (
-    <div className="bg-background shadow-lg rounded-lg p-6 mb-8">
-      <h2 className="text-2xl font-bold capitalize mb-4 text-gray-900 dark:text-gray-100">{`${grade} ${scheduleType} Schedule`}</h2>
+    <div className="bg-background shadow-lg rounded-lg p-2 sm:p-6 mb-8">
+      <h2 className="text-xl sm:text-2xl font-bold capitalize mb-4 text-gray-900 dark:text-gray-100">{`${grade} ${scheduleType} Schedule`}</h2>
       <div className="flex justify-end mb-4 space-x-2">
-        {isEditing ? (
-          <>
-            <button
-              onClick={handleSaveClick}
-              className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={
-                JSON.stringify(tableData) === JSON.stringify(editedData)
-              }
+        {isModerator &&
+          (isEditing ? (
+            <div
+              className={`flex ${
+                isMobile ? "flex-col space-y-2" : "space-x-2"
+              }`}
             >
-              <FaSave className="mr-2" />
-              Save Changes
-            </button>
-            <button
-              onClick={handleCancelClick}
-              className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded flex items-center"
-            >
-              <FaTimes className="mr-2" />
-              Cancel
-            </button>
-            {Object.keys(editedData).length < 7 && (
               <button
-                onClick={addNewDay}
-                className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded flex items-center"
+                onClick={handleSaveClick}
+                className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-3 sm:px-4 rounded flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+                disabled={
+                  JSON.stringify(tableData) === JSON.stringify(editedData)
+                }
               >
-                <FaPlus className="mr-2" />
-                Add New Day
+                <FaSave className="mr-2" />
+                {isMobile ? "Save" : "Save Changes"}
               </button>
-            )}
-          </>
-        ) : (
-          <button
-            onClick={handleEditClick}
-            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded flex items-center"
-          >
-            <FaEdit className="mr-2" />
-            Edit Schedule
-          </button>
-        )}
+              <button
+                onClick={handleCancelClick}
+                className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-3 sm:px-4 rounded flex items-center justify-center text-sm sm:text-base"
+              >
+                <FaTimes className="mr-2" />
+                Cancel
+              </button>
+              {Object.keys(editedData).length < 7 && (
+                <button
+                  onClick={addNewDay}
+                  className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-3 sm:px-4 rounded flex items-center justify-center text-sm sm:text-base"
+                >
+                  <FaPlus className="mr-2" />
+                  {isMobile ? "New Day" : "Add New Day"}
+                </button>
+              )}
+            </div>
+          ) : (
+            <button
+              onClick={handleEditClick}
+              className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-3 sm:px-4 rounded flex items-center text-sm sm:text-base"
+            >
+              <FaEdit className="mr-2" />
+              Edit Schedule
+            </button>
+          ))}
       </div>
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto -mx-2 sm:mx-0">
         {Object.keys(editedData).length > 0 ? (
-          <table className="min-w-full table-auto text-left border-collapse">
+          <table className="min-w-full table-auto text-left border-collapse text-sm sm:text-base">
             <thead>
               <tr className={`bg-gradient-to-r ${colorGradient}`}>
-                <th className="px-6 py-3 text-sm font-semibold text-white">
-                  Day
+                <th className="px-2 sm:px-6 py-3 text-xs sm:text-sm font-semibold text-white">
+                  <div className="flex items-center gap-2">
+                    <FaCalendarDay />
+                    <span>Day</span>
+                  </div>
                 </th>
-                <th className="px-6 py-3 text-sm font-semibold text-white">
-                  Subject
+                <th className="px-2 sm:px-6 py-3 text-xs sm:text-sm font-semibold text-white">
+                  <div className="flex items-center gap-2">
+                    <FaBook />
+                    <span>Subject</span>
+                  </div>
                 </th>
-                <th className="px-6 py-3 text-sm font-semibold text-white">
-                  Time
+                <th className="px-2 sm:px-6 py-3 text-xs sm:text-sm font-semibold text-white">
+                  <div className="flex items-center gap-2">
+                    <FaClock />
+                    <span>Time</span>
+                  </div>
                 </th>
-                <th className="px-6 py-3 text-sm font-semibold text-white">
-                  Location
-                </th>
-                {isEditing && (
-                  <th className="px-6 py-3 text-sm font-semibold text-white">
-                    Actions
+                {!isMobile && (
+                  <th className="px-2 sm:px-6 py-3 text-xs sm:text-sm font-semibold text-white">
+                    <div className="flex items-center gap-2">
+                      <FaMapMarkerAlt />
+                      <span>Location</span>
+                    </div>
+                  </th>
+                )}
+                {isEditing && isModerator && (
+                  <th className="px-2 sm:px-6 py-3 text-xs sm:text-sm font-semibold text-white">
+                    <div className="flex items-center gap-2">
+                      <FaCog />
+                      <span>Actions</span>
+                    </div>
                   </th>
                 )}
               </tr>
@@ -157,22 +193,24 @@ const ScheduleTable = ({
                       >
                         {index === 0 && (
                           <td
-                            className="px-6 py-4 font-medium border-r text-gray-900 dark:text-gray-100 space-x-4"
+                            className="px-2 sm:px-6 py-2 sm:py-4 font-medium border-r text-gray-900 dark:text-gray-100 space-x-2 sm:space-x-4"
                             rowSpan={daySessions.length}
                           >
-                            {isEditing && (
+                            {isEditing && isModerator && (
                               <button
                                 onClick={() => deleteDay(day)}
-                                className="ml-2 text-red-600 hover:text-red-800"
+                                className="text-red-600 hover:text-red-800"
                                 title="Delete Day"
                               >
-                                <FaTrash />
+                                <FaTrash className="text-xs sm:text-sm" />
                               </button>
                             )}
-                            <span className="font-semibold">{day}</span>
+                            <span className="font-semibold text-xs sm:text-sm">
+                              {isMobile ? day.slice(0, 3) : day}
+                            </span>
                           </td>
                         )}
-                        <td className="px-6 py-4 text-gray-900 dark:text-gray-100">
+                        <td className="px-2 sm:px-6 py-2 sm:py-4 text-gray-900 dark:text-gray-100">
                           {isEditing ? (
                             <input
                               type="text"
@@ -185,13 +223,21 @@ const ScheduleTable = ({
                                   e.target.value
                                 )
                               }
-                              className="w-full border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                              className="w-full border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-xs sm:text-sm"
                             />
                           ) : (
-                            session.subject
+                            <div className="text-xs sm:text-sm">
+                              {session.subject}
+                            </div>
+                          )}
+                          {isMobile && !isEditing && session.location && (
+                            <div className="text-xs text-gray-500 mt-1 flex items-center gap-1">
+                              <FaMapMarkerAlt className="text-red-500" />
+                              <span>{session.location}</span>
+                            </div>
                           )}
                         </td>
-                        <td className="px-6 py-4 text-gray-900 dark:text-gray-100">
+                        <td className="px-2 sm:px-6 py-2 sm:py-4 text-gray-900 dark:text-gray-100">
                           {isEditing ? (
                             <input
                               type="text"
@@ -199,14 +245,16 @@ const ScheduleTable = ({
                               onChange={(e) =>
                                 handleChange(day, index, "time", e.target.value)
                               }
-                              className="w-full border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                              className="w-full border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-xs sm:text-sm"
                             />
                           ) : (
-                            session.time
+                            <div className="text-xs sm:text-sm">
+                              {session.time}
+                            </div>
                           )}
                         </td>
-                        <td className="px-6 py-4 text-gray-900 dark:text-gray-100">
-                          {isEditing ? (
+                        {isMobile && isEditing && (
+                          <td className="px-2 sm:px-6 py-2 sm:py-4 text-gray-900 dark:text-gray-100">
                             <input
                               type="text"
                               value={session.location}
@@ -218,27 +266,49 @@ const ScheduleTable = ({
                                   e.target.value
                                 )
                               }
-                              className="w-full border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                              placeholder="Location"
+                              className="w-full border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-xs"
                             />
-                          ) : (
-                            session.location
-                          )}
-                        </td>
-                        {isEditing && (
-                          <td className="px-6 py-4 space-x-4 flex items-center text-sm">
+                          </td>
+                        )}
+                        {!isMobile && (
+                          <td className="px-2 sm:px-6 py-2 sm:py-4 text-gray-900 dark:text-gray-100">
+                            {isEditing ? (
+                              <input
+                                type="text"
+                                value={session.location}
+                                onChange={(e) =>
+                                  handleChange(
+                                    day,
+                                    index,
+                                    "location",
+                                    e.target.value
+                                  )
+                                }
+                                className="w-full border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-xs sm:text-sm"
+                              />
+                            ) : (
+                              <div className="text-xs sm:text-sm">
+                                {session.location}
+                              </div>
+                            )}
+                          </td>
+                        )}
+                        {isEditing && isModerator && (
+                          <td className="px-2 sm:px-6 py-2 sm:py-4 space-x-2 sm:space-x-4 flex items-center">
                             <button
                               onClick={() => deleteSession(day, index)}
-                              className="bg-red-600 hover:bg-red-800 flex items-center gap-4 text-white font-bold py-1 px-2 rounded"
+                              className="bg-red-600 hover:bg-red-800 text-white font-bold py-1 px-2 rounded flex items-center text-xs sm:text-sm"
                             >
-                              <FaTrash />
-                              Delete Session
+                              <FaTrash className="mr-1 sm:mr-2" />
+                              {!isMobile && "Delete"}
                             </button>
                             {index === daySessions.length - 1 && (
                               <button
                                 onClick={() => addNewSession(day)}
-                                className="ml-2 bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-2 rounded"
+                                className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-2 rounded text-xs sm:text-sm"
                               >
-                                Add Session
+                                {isMobile ? "+" : "Add"}
                               </button>
                             )}
                           </td>
@@ -251,7 +321,7 @@ const ScheduleTable = ({
             </tbody>
           </table>
         ) : (
-          <p className="text-center text-red-600 text-xl py-6">
+          <p className="text-center text-red-600 text-sm sm:text-xl py-6">
             No {scheduleType} schedule for {grade}
           </p>
         )}

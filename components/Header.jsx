@@ -63,13 +63,13 @@ const Header = () => {
                         <Image
                           src={user.avatar}
                           alt={`${user.fullName}'s Avatar`}
-                          width={100}
-                          height={100}
+                          width={32}
+                          height={32}
                           priority
                           className="w-full h-full object-cover rounded-full"
                         />
                       ) : (
-                        <div className="w-24 h-24 rounded-full bg-gray-200" />
+                        <div className="w-8 h-8 rounded-full bg-gray-200" />
                       )}
                     </div>
                   ) : (
@@ -84,9 +84,12 @@ const Header = () => {
               >
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="cursor-pointer">
-                  Change Password
-                </DropdownMenuItem>
+                {user &&
+                  (user.role === "student" || user.role === "teacher") && (
+                    <DropdownMenuItem className="cursor-pointer">
+                      Change Password
+                    </DropdownMenuItem>
+                  )}
                 <DropdownMenuItem className="cursor-pointer">
                   Change Language
                 </DropdownMenuItem>

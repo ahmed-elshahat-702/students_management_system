@@ -95,6 +95,7 @@ const SideBar = () => {
               ? "bg-foreground dark:bg-secondary font-medium"
               : " hover:bg-secondary"
           }`}
+          aria-current={isActive ? "page" : undefined}
         >
           <span
             className={`text-md ${isActive ? "text-white" : "text-gray-600"}`}
@@ -150,7 +151,10 @@ const SideBar = () => {
   }, [loading, user, activeLink]);
 
   return (
-    <Sidebar className="bg-background/80 backdrop-blur-lg border-r shadow-sm">
+    <Sidebar
+      className="bg-background border-r shadow-sm"
+      aria-label="Main Navigation"
+    >
       <SidebarHeader className="my-3">
         <h1 className="text-lg font-semibold">University System</h1>
       </SidebarHeader>
@@ -158,7 +162,9 @@ const SideBar = () => {
       <SidebarContent className="py-3">
         <SidebarGroup>
           <SidebarGroupContent>
-            <SidebarMenu>{navLinksToRender}</SidebarMenu>
+            <SidebarMenu role="navigation" aria-label="User Menu">
+              {navLinksToRender}
+            </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
@@ -166,7 +172,9 @@ const SideBar = () => {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <span className="text-sm">Coded by: Ahmed Elshahat</span>
+            <span className="text-sm" aria-label="Developer Credit">
+              Coded by: Ahmed Elshahat
+            </span>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>

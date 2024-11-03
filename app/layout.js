@@ -22,11 +22,11 @@ export default function RootLayout({ children }) {
           enableSystem
           disableTransitionOnChange
         >
-          <SidebarProvider>
-            <main className="w-full">
-              <EdgeStoreProvider>{children}</EdgeStoreProvider>
-            </main>
-          </SidebarProvider>
+          <EdgeStoreProvider>
+            <SidebarProvider>
+              <main className="w-full">{children}</main>
+            </SidebarProvider>
+          </EdgeStoreProvider>
           <Toaster />
         </ThemeProvider>
       </body>
